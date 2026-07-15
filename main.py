@@ -24,26 +24,24 @@ def generar_codigo_sala() -> str:
         if codigo not in partidas:
             return codigo
 
-# --- RUTAS DE NAVEGACIÓN ---
-
-# --- RUTAS DE NAVEGACIÓN CORREGIDAS ---
+# --- RUTAS DE NAVEGACIÓN CORREGIDAS PARA NUEVO FASTAPI ---
 
 @app.get("/")
 async def get_lobby(request: Request):
-    # Usamos context= para evitar el conflicto en Jinja2
+    # Pasamos 'request' directamente como argumento de la función
     return templates.TemplateResponse(
-        name="index.html", 
-        context={"request": request}
+        request=request,
+        name="index.html"
     )
 
 @app.get("/play/{codigo}/{username}")
 async def get_game(request: Request, codigo: str, username: str):
-    # Pasamos explícitamente el diccionario dentro de "context"
+    # Pasamos 'request' directamente y los datos adicionales en 'context'
     return templates.TemplateResponse(
-        name="game.html", 
+        request=request,
+        name="game.html",
         context={
-            "request": request, 
-            "codigo": codigo, 
+            "codigo": codigo,
             "username": username
         }
     )
