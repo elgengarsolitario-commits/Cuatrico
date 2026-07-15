@@ -26,29 +26,27 @@ def generar_codigo_sala() -> str:
 
 # --- RUTAS DE NAVEGACIÓN ---
 
+# --- RUTAS DE NAVEGACIÓN CORREGIDAS ---
+
 @app.get("/")
 async def get_lobby(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    # Usamos context= para evitar el conflicto en Jinja2
+    return templates.TemplateResponse(
+        name="index.html", 
+        context={"request": request}
+    )
 
 @app.get("/play/{codigo}/{username}")
 async def get_game(request: Request, codigo: str, username: str):
-    return templates.TemplateResponse("game.html", {
-        "request": request, 
-        "codigo": codigo, 
-        "username": username
-    })
-
-@app.post("/crear-sala")
-async def crear_sala():
-    codigo = generar_codigo_sala()
-    partidas[codigo] = {
-        "jugadores": [],
-        "nombres": [],
-        "turno_index": 0,   # 0 para el creador, 1 para el invitado
-        "lineas": {},       # Guarda id_linea: "azul"|"rojo"
-        "puntos": [0, 0]    # Puntos de [Jugador 1, Jugador 2]
-    }
-    return {"codigo": codigo}
+    # Pasamos explícitamente el diccionario dentro de "context"
+    return templates.TemplateResponse(
+        name="game.html", 
+        context={
+            "request": request, 
+            "codigo": codigo, 
+            "username": username
+        }
+    )
 
 # --- COMUNICACIÓN EN TIEMPO REAL (WEBSOCKET) ---
 
